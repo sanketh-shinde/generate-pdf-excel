@@ -1,6 +1,5 @@
 package com.sanketh.generatepdfexcel.service;
 
-import com.lowagie.text.Document;
 import com.sanketh.generatepdfexcel.entity.Student;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -14,7 +13,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Stream;
 
 @Service
 public class ExcelServiceImpl implements ExcelService {
@@ -28,7 +26,7 @@ public class ExcelServiceImpl implements ExcelService {
         String[] header = {"Id", "Name", "Address"};
         List<Student> students = studentService.allStudents();
 
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet studentsSheet = workbook.createSheet("Students");
@@ -48,9 +46,9 @@ public class ExcelServiceImpl implements ExcelService {
                 dataRow.createCell(2).setCellValue(student.getAddress());
             }
 
-            workbook.write(outputStream);
+            workbook.write(out);
         }
 
-        return new ByteArrayInputStream(outputStream.toByteArray());
+        return new ByteArrayInputStream(out.toByteArray());
     }
 }

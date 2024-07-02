@@ -25,15 +25,16 @@ public class ExcelController {
 
     @GetMapping("/generateExcel")
     public ResponseEntity<InputStreamResource> generateExcel() throws IOException {
+
+        String fileName = "students";
+
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
         String currentDateTime = dateFormatter.format(new Date());
 
         ByteArrayInputStream excel = excelService.createExcel();
 
-        String fileName = "students";
-
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName + "_" + currentDateTime  + ".xlsx")
-                .contentType(MediaType.parseMediaType("application/vnd.ms-excel")).body(new InputStreamResource(excel));
+               .contentType(MediaType.parseMediaType("application/vnd.ms-excel")).body(new InputStreamResource(excel));
     }
 }

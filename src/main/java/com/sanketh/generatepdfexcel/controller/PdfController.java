@@ -25,15 +25,17 @@ public class PdfController {
     @GetMapping("/generatePdf")
     public ResponseEntity<InputStreamResource> generatePdf() {
 
+        String fileName = "students";
+
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
         String currentDateTime = dateFormatter.format(new Date());
 
         ByteArrayInputStream pdf = pdfService.createPdf();
 
-        String fileName = "students";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", fileName + "_" + currentDateTime + ".pdf");
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName + "_" + currentDateTime  + ".pdf")
-                .contentType(MediaType.APPLICATION_PDF).body(new InputStreamResource(pdf));
+        return ResponseEntity.ok().headers(headers).body(new InputStreamResource(pdf));
     }
 }
