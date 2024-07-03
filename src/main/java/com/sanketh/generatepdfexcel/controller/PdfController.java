@@ -1,16 +1,17 @@
 package com.sanketh.generatepdfexcel.controller;
 
+import com.sanketh.generatepdfexcel.service.FilesDataService;
 import com.sanketh.generatepdfexcel.service.PdfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -21,6 +22,9 @@ public class PdfController {
 
     @Autowired
     private PdfService pdfService;
+
+    @Autowired
+    private FilesDataService filesDataService;
 
     @GetMapping("/generatePdf")
     public ResponseEntity<InputStreamResource> generatePdf() {
@@ -38,4 +42,19 @@ public class PdfController {
 
         return ResponseEntity.ok().headers(headers).body(new InputStreamResource(pdf));
     }
+
+    @PostMapping("/upload")
+    public ResponseEntity<String> storePdf(@RequestParam("file") MultipartFile file) throws IOException {
+        String base64String = filesDataService.storePdfInBase64String(file);
+        return ResponseEntity.ok().body(base64String);
+    }
+
+    @GetMapping(value = "/retrieve/{fileName}")
+    public ResponseEntity<byte[]> getPdfFromDB(@PathVariable String fileName) throws IOException {
+        byte[] pdf = filesDataService.convertToPdf(fileName);
+        return ResponseEntity.ok()
+                .contentType(MediaType.valueOf("application/pdf"))
+                .body(pdf);
+    }
+
 }
